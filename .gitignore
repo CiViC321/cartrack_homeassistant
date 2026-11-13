@@ -152,6 +152,7 @@ activemq-data/
 # Environments
 .env
 .envrc
+.devcontainer/.env
 .venv
 env/
 venv/
@@ -216,5 +217,21 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+# Local Home Assistant development state
+dev/config/.storage/
+dev/config/home-assistant_v2.db*
+dev/config/secrets.yaml
+dev/config/*.log
+
 # Streamlit
 .streamlit/secrets.toml
+
+# misc
+.coverage
+.vscode
+coverage.xml
+.ruff_cache
+
+# Home Assistant configuration
+config/*
+!config/configuration.yaml

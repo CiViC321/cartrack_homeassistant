@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect a CarTrack account",
+        "description": "Use your CarTrack username and API key. Add the integration again for each account.",
+        "data": {
+          "username": "Username",
+          "api_key": "API key",
+          "api_region": "CarTrack account region"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "CarTrack rejected the username or API key.",
+      "cannot_connect": "Unable to connect to the CarTrack Fleet API."
+    },
+    "abort": {
+      "already_configured": "This CarTrack account is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Vehicle polling",
+        "description": "Parked vehicles are checked every 60 seconds. If any vehicle is not parked, the configured interval is used.",
+        "data": {
+          "moving_update_interval_seconds": "Non-parked polling interval (seconds)"
+        }
+      }
+    }
+  }
+}

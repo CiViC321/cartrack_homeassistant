@@ -1,0 +1,40 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspaces/cartrack_homeassistant
+    command:
+      - python
+      - -m
+      - debugpy
+      - --listen
+      - 0.0.0.0:5678
+      - -m
+      - homeassistant
+      - --config
+      - /config
+    ports:
+      - "8123:8123"
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - .:/workspaces/cartrack_homeassistant
+      - ./dev/config:/config
+      - ./custom_components:/config/custom_components:ro
+    environment:
+      TZ: UTC
+    restart: unless-stopped
+
+  homeassistant:
+    container_name: cartrack-homeassistant-dev
+    profiles:
+      - standalone
+    image: ghcr.io/home-assistant/home-assistant:stable
+    ports:
+      - "8123:8123"
+    volumes:
+      - ./dev/config:/config
+      - ./custom_components:/config/custom_components:ro
+    environment:
+      TZ: UTC
+    restart: unless-stopped

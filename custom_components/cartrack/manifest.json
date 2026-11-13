@@ -1,0 +1,10 @@
+{
+  "domain": "cartrack",
+  "name": "CarTrack",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://developer.cartrack.com/docs/applications/fleet-api",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.1.0"
+}

@@ -52,6 +52,7 @@ async def async_setup_entry(
     """Set up one status sensor for each vehicle, including newly discovered ones."""
     coordinator: CarTrackCoordinator = entry.runtime_data
     known_ids: set[str] = set()
+    async_add_entities([CarTrackApiRateSensor(coordinator, entry)])
 
     @callback
     def add_new_vehicles() -> None:
@@ -69,6 +70,46 @@ async def async_setup_entry(
 
     add_new_vehicles()
     entry.async_on_unload(coordinator.async_add_listener(add_new_vehicles))
+
+
+class CarTrackApiRateSensor(CoordinatorEntity[CarTrackCoordinator], SensorEntity):
+    """Monitor recent API requests and the corresponding account limits."""
+
+    entity_description = SensorEntityDescription(
+        key="api_requests",
+        name="API requests",
+        native_unit_of_measurement="requests/min",
+        state_class=SensorStateClass.MEASUREMENT,
+    )
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:api"
+
+    def __init__(self, coordinator: CarTrackCoordinator, entry: ConfigEntry) -> None:
+        """Initialize the account-level rate monitor."""
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{entry.entry_id}_api_requests"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=entry.title,
+            manufacturer="CarTrack",
+            model="Fleet API account",
+        )
+
+    @property
+    def native_value(self) -> int:
+        """Return API requests made in the trailing minute."""
+        return self.coordinator.api.rate_limit_stats["requests_last_minute"]
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Expose counts and limits for the account and each used endpoint."""
+        stats = self.coordinator.api.rate_limit_stats
+        return {
+            "window_seconds": stats["window_seconds"],
+            "default_limit_per_minute": stats["default_limit_per_minute"],
+            "requests_by_endpoint": stats["requests_by_endpoint"],
+            "limits_per_minute": stats["limits_per_minute"],
+        }
 
 
 class CarTrackVehicleSensor(CoordinatorEntity[CarTrackCoordinator], SensorEntity):

@@ -37,9 +37,11 @@ The **Status** sensor also exposes other available vehicle data as attributes, s
 
 The CarWatch switch is created for each vehicle, but CarTrack must report its current state for the switch to show on or off. Changing the switch requires API credentials with permission to manage CarWatch. The API key is used as the password for HTTP Basic Authentication.
 
+An account-level **API requests** sensor reports requests made by this integration during the trailing minute. Its attributes show per-endpoint counts and the documented per-minute limits, including the 60-request limit for `GET /vehicles/status`. The API also applies a default limit of 1,000 requests per minute. Counts are local to this integration and do not include calls made by other applications using the account.
+
 ## Polling
 
-By default, the integration checks every 5 seconds while any vehicle is not confirmed parked. In the integration's **Options**, you can set this active polling interval from 2 to 60 seconds. When every vehicle reports ignition off, polling slows to once every 60 seconds. If ignition data is unavailable for a vehicle, the active interval is used.
+The integration polls every 1.5 seconds to leave headroom below CarTrack's 60-requests-per-minute limit for `GET /vehicles/status`. The polling rate is fixed; there is no user-configurable rate. If CarTrack returns `429 Too Many Requests`, the integration observes its retry headers and backs off with jitter. Each update also requests CarWatch status, which is covered by CarTrack's default 1,000-requests-per-minute limit.
 
 ## Development
 

@@ -3,23 +3,26 @@
 from __future__ import annotations
 
 import logging
+import secrets
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import CarTrackApi, CarTrackAuthError, CarTrackConnectionError
-from .const import (
-    DEFAULT_MOVING_UPDATE_INTERVAL_SECONDS,
-    DOMAIN,
-    UPDATE_INTERVAL_SECONDS,
+from .api import (
+    CarTrackApi,
+    CarTrackAuthError,
+    CarTrackConnectionError,
+    CarTrackRateLimitError,
 )
+from .const import DOMAIN, UPDATE_INTERVAL_SECONDS
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
+MAX_RATE_LIMIT_BACKOFF_SECONDS = 300
 
 
 def _records(payload: dict) -> list[dict]:
@@ -37,17 +40,16 @@ class CarTrackCoordinator(DataUpdateCoordinator[dict]):
         self,
         hass: HomeAssistant,
         api: CarTrackApi,
-        moving_update_interval_seconds: int = DEFAULT_MOVING_UPDATE_INTERVAL_SECONDS,
     ) -> None:
-        """Initialize the coordinator with parked and active polling intervals."""
+        """Initialize the coordinator below the API's status endpoint limit."""
         self.api = api
-        self._parked_update_interval = timedelta(seconds=UPDATE_INTERVAL_SECONDS)
-        self._moving_update_interval = timedelta(seconds=moving_update_interval_seconds)
+        self._default_update_interval = timedelta(seconds=UPDATE_INTERVAL_SECONDS)
+        self._rate_limit_backoff_seconds = UPDATE_INTERVAL_SECONDS
         super().__init__(
             hass,
             logger=_LOGGER,
             name=DOMAIN,
-            update_interval=self._parked_update_interval,
+            update_interval=self._default_update_interval,
         )
 
     async def _async_update_data(self) -> dict:
@@ -79,16 +81,23 @@ class CarTrackCoordinator(DataUpdateCoordinator[dict]):
                     break
                 page += 1
 
-            self.update_interval = (
-                self._parked_update_interval
-                if all(
-                    vehicle.get("ignition") is False for vehicle in vehicles.values()
-                )
-                else self._moving_update_interval
+        except CarTrackRateLimitError as err:
+            self._rate_limit_backoff_seconds = min(
+                self._rate_limit_backoff_seconds * 2,
+                MAX_RATE_LIMIT_BACKOFF_SECONDS,
             )
+            delay = max(err.retry_after or 0, self._rate_limit_backoff_seconds)
+            delay += secrets.SystemRandom().uniform(0, min(1.0, delay * 0.1))
+            self.update_interval = timedelta(seconds=delay)
+            _LOGGER.warning(
+                "CarTrack API rate limit exceeded; retrying in %.1f seconds", delay
+            )
+            raise UpdateFailed from err
         except CarTrackAuthError as err:
             raise ConfigEntryAuthFailed from err
         except CarTrackConnectionError as err:
             raise UpdateFailed from err
         else:
+            self._rate_limit_backoff_seconds = UPDATE_INTERVAL_SECONDS
+            self.update_interval = self._default_update_interval
             return {"vehicles": vehicles, "carwatch": carwatch}

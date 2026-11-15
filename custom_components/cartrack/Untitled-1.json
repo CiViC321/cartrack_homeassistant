@@ -1,0 +1,219 @@
+{
+  "data": [
+    {
+      "vehicle_id": 304913924,
+      "registration": "LD01KZGP",
+      "engine_type": "Combustion",
+      "chassis_number": "MBHCZC63S00B62960",
+      "event_ts": "2026-11-15 13:01:06+02",
+      "bearing": 0,
+      "speed": 0,
+      "ignition": false,
+      "idling": false,
+      "odometer": 33363300,
+      "clock": 1209555,
+      "altitude": 1568,
+      "rpm": 0,
+      "road_speed": null,
+      "vext": "12.080",
+      "temp1": null,
+      "temp2": null,
+      "temp3": null,
+      "temp4": null,
+      "last_identification_tag_id": null,
+      "io_panic": "LOW",
+      "io_disarm": "LOW",
+      "dynamic1": 1,
+      "dynamic2": null,
+      "dynamic3": null,
+      "dynamic4": null,
+      "input_state": 192,
+      "input_state2": -2147483648,
+      "input_state3": null,
+      "central_locking_status": null,
+      "tcu_percentage": 100,
+      "driver": {
+        "driver_id": "ccd7e07e-2b72-11ee-9507-506b8da99dd2",
+        "first_name": "Karla",
+        "last_name": "Burger",
+        "id_number": null,
+        "license_number": null,
+        "driver_id_tag": null,
+        "phone_number": "27812955016"
+      },
+      "fuel": {
+        "updated": null,
+        "level": null,
+        "precentage_left": null,
+        "total_consumed": null,
+        "total_consumed_litres": null,
+        "tanks": [
+          {
+            "tank": "MAIN",
+            "level": null,
+            "capacity": null,
+            "percentage": null
+          }
+        ]
+      },
+      "electric": {
+        "battery_percentage_left": null,
+        "battery_ts": null,
+        "charging_status": null,
+        "charging_status_ts": null
+      },
+      "location": {
+        "updated": "2026-11-15 13:01:06+02",
+        "longitude": 28.288845,
+        "latitude": -25.844925,
+        "gps_fix_type": 3,
+        "position_description": "Stomp Doring Street, Moreleta Park, Pretoria, Gauteng, South Africa",
+        "geofence_ids": [
+          "60a1f518-fbaa-11ed-be71-506b8da99dd2"
+        ]
+      }
+    },
+    {
+      "vehicle_id": 443153167,
+      "registration": "MG85LVGP",
+      "engine_type": "Combustion",
+      "chassis_number": "MDHFBADD0Z0033195",
+      "event_ts": "2026-11-15 07:59:58+02",
+      "bearing": 166,
+      "speed": 0,
+      "ignition": false,
+      "idling": false,
+      "odometer": 10730900,
+      "clock": 8908003,
+      "altitude": 159,
+      "rpm": 0,
+      "road_speed": null,
+      "vext": "12.360",
+      "temp1": null,
+      "temp2": null,
+      "temp3": null,
+      "temp4": null,
+      "last_identification_tag_id": null,
+      "io_panic": "LOW",
+      "io_disarm": "LOW",
+      "dynamic1": 1,
+      "dynamic2": null,
+      "dynamic3": null,
+      "dynamic4": null,
+      "input_state": 192,
+      "input_state2": 0,
+      "input_state3": null,
+      "central_locking_status": null,
+      "tcu_percentage": 100,
+      "driver": {
+        "driver_id": "42dfb3e4-1534-11f0-8ed7-506b8da99dd2",
+        "first_name": "Christiaan",
+        "last_name": "Burger",
+        "id_number": null,
+        "license_number": null,
+        "driver_id_tag": null,
+        "phone_number": "27614667669"
+      },
+      "fuel": {
+        "updated": null,
+        "level": null,
+        "precentage_left": null,
+        "total_consumed": null,
+        "total_consumed_litres": null,
+        "tanks": [
+          {
+            "tank": "MAIN",
+            "level": null,
+            "capacity": null,
+            "percentage": null
+          }
+        ]
+      },
+      "electric": {
+        "battery_percentage_left": null,
+        "battery_ts": null,
+        "charging_status": null,
+        "charging_status_ts": null
+      },
+      "location": {
+        "updated": "2026-11-15 07:59:58+02",
+        "longitude": 18.868677,
+        "latitude": -33.933376,
+        "gps_fix_type": 3,
+        "position_description": "Stellenbosch, Western Cape, South Africa",
+        "geofence_ids": []
+      }
+    },
+    {
+      "vehicle_id": 443153187,
+      "registration": "MG85LVGPS1",
+      "engine_type": null,
+      "chassis_number": "MDHFBADD0Z0033195S1",
+      "event_ts": "2026-11-15 08:00:19+02",
+      "bearing": 201,
+      "speed": 0,
+      "ignition": false,
+      "idling": false,
+      "odometer": 10588500,
+      "clock": 8647699,
+      "altitude": 156,
+      "rpm": 0,
+      "road_speed": null,
+      "vext": "12.240",
+      "temp1": null,
+      "temp2": null,
+      "temp3": null,
+      "temp4": null,
+      "last_identification_tag_id": null,
+      "io_panic": "LOW",
+      "io_disarm": "LOW",
+      "dynamic1": 1,
+      "dynamic2": null,
+      "dynamic3": null,
+      "dynamic4": null,
+      "input_state": 192,
+      "input_state2": -2147483648,
+      "input_state3": null,
+      "central_locking_status": null,
+      "tcu_percentage": 100,
+      "driver": {
+        "driver_id": null,
+        "first_name": null,
+        "last_name": null,
+        "id_number": null,
+        "license_number": null,
+        "driver_id_tag": null,
+        "phone_number": null
+      },
+      "fuel": {
+        "updated": null,
+        "level": null,
+        "precentage_left": null,
+        "total_consumed": null,
+        "total_consumed_litres": null,
+        "tanks": [
+          {
+            "tank": "MAIN",
+            "level": null,
+            "capacity": null,
+            "percentage": null
+          }
+        ]
+      },
+      "electric": {
+        "battery_percentage_left": null,
+        "battery_ts": null,
+        "charging_status": null,
+        "charging_status_ts": null
+      },
+      "location": {
+        "updated": "2026-11-15 08:00:19+02",
+        "longitude": 18.868673,
+        "latitude": -33.933464,
+        "gps_fix_type": 3,
+        "position_description": "Victoria Street, Stellenbosch, Western Cape, South Africa",
+        "geofence_ids": []
+      }
+    }
+  ]
+}

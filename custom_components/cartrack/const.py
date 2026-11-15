@@ -5,8 +5,6 @@ CONF_API_URL = "api_url"
 CONF_API_REGION = "api_region"
 CONF_API_KEY = "api_key"
 CONF_USERNAME = "username"
-CONF_MOVING_UPDATE_INTERVAL_SECONDS = "moving_update_interval_seconds"
-CONF_LEGACY_MOVING_UPDATE_INTERVAL_MINUTES = "moving_update_interval_minutes"
 DEFAULT_API_REGION = "za"
 API_REGIONS = (
     ("au", "Australia"),
@@ -38,7 +36,4 @@ API_REGIONS = (
     ("zw", "Zimbabwe"),
 )
 API_REGION_DOMAINS = {"ke": "karooooo.com", "sa": "karooooo.com"}
-UPDATE_INTERVAL_SECONDS = 60
-DEFAULT_MOVING_UPDATE_INTERVAL_SECONDS = 5
-MIN_MOVING_UPDATE_INTERVAL_SECONDS = 2
-MAX_MOVING_UPDATE_INTERVAL_SECONDS = 60
+UPDATE_INTERVAL_SECONDS = 3

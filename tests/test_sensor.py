@@ -1,5 +1,7 @@
 """Tests for CarTrack vehicle telemetry sensors."""
 
+from types import SimpleNamespace
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorStateClass,
@@ -8,10 +10,35 @@ from homeassistant.const import PERCENTAGE, UnitOfElectricPotential, UnitOfTime
 
 from custom_components.cartrack.sensor import (
     TELEMETRY_SENSORS,
+    CarTrackApiRateSensor,
     _coerce_numeric_value,
 )
 
 EXPECTED_BATTERY_VOLTAGE = 12.08
+EXPECTED_API_REQUESTS = 2
+
+
+def test_api_rate_sensor_exposes_requests_and_applicable_limits() -> None:
+    """The account sensor exposes request counts and their rate limits."""
+    sensor = object.__new__(CarTrackApiRateSensor)
+    stats = {
+        "window_seconds": 60,
+        "default_limit_per_minute": 1000,
+        "requests_last_minute": 2,
+        "requests_by_endpoint": {"GET /vehicles/status": 2},
+        "limits_per_minute": {"GET /vehicles/status": 60},
+    }
+    vars(sensor)["coordinator"] = SimpleNamespace(
+        api=SimpleNamespace(rate_limit_stats=stats)
+    )
+
+    assert sensor.native_value == EXPECTED_API_REQUESTS
+    assert sensor.extra_state_attributes == {
+        "window_seconds": 60,
+        "default_limit_per_minute": 1000,
+        "requests_by_endpoint": {"GET /vehicles/status": 2},
+        "limits_per_minute": {"GET /vehicles/status": 60},
+    }
 
 
 def test_battery_voltage_sensor_uses_cartrack_vext() -> None:

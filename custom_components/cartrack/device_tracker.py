@@ -75,6 +75,15 @@ class CarTrackVehicleTracker(CoordinatorEntity[CarTrackCoordinator], TrackerEnti
         """Return the latest vehicle longitude."""
         return self._coordinate("longitude", "lon", "lng")
 
+    @property
+    def extra_state_attributes(self) -> dict[str, int | float]:
+        """Expose vehicle altitude in meters when CarTrack reports it."""
+        vehicle = self.coordinator.data["vehicles"].get(self._vehicle_id, {})
+        altitude = vehicle.get("altitude")
+        if isinstance(altitude, (int, float)) and not isinstance(altitude, bool):
+            return {"altitude": altitude}
+        return {}
+
     def _coordinate(self, *keys: str) -> float | None:
         vehicle = self.coordinator.data["vehicles"].get(self._vehicle_id, {})
         location = vehicle.get("location")

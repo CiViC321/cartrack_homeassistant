@@ -10,7 +10,13 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import UnitOfLength, UnitOfSpeed
+from homeassistant.const import (
+    PERCENTAGE,
+    UnitOfElectricPotential,
+    UnitOfLength,
+    UnitOfSpeed,
+    UnitOfTime,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -22,6 +28,20 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+
+def _coerce_numeric_value(value: object) -> int | float | None:
+    """Convert numeric telemetry values to a Home Assistant sensor value."""
+    if isinstance(value, str):
+        try:
+            value = float(value)
+        except ValueError:
+            return None
+    return (
+        value
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        else None
+    )
 
 
 async def async_setup_entry(
@@ -102,8 +122,6 @@ class CarTrackVehicleSensor(CoordinatorEntity[CarTrackCoordinator], SensorEntity
                 "event_ts",
                 "ignition",
                 "idling",
-                "speed",
-                "odometer",
                 "bearing",
                 "fuel",
                 "electric",
@@ -159,11 +177,7 @@ class CarTrackTelemetrySensor(CoordinatorEntity[CarTrackCoordinator], SensorEnti
             .get(self._vehicle_id, {})
             .get(self.entity_description.key)
         )
-        return (
-            value
-            if isinstance(value, (int, float)) and not isinstance(value, bool)
-            else None
-        )
+        return _coerce_numeric_value(value)
 
 
 TELEMETRY_SENSORS = (
@@ -179,6 +193,33 @@ TELEMETRY_SENSORS = (
         name="Odometer",
         device_class=SensorDeviceClass.DISTANCE,
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+    SensorEntityDescription(
+        key="vext",
+        name="Battery voltage",
+        device_class=SensorDeviceClass.VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    SensorEntityDescription(
+        key="tcu_percentage",
+        name="TCU battery level",
+        device_class=SensorDeviceClass.BATTERY,
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    SensorEntityDescription(
+        key="rpm",
+        name="Engine RPM",
+        native_unit_of_measurement="rpm",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    SensorEntityDescription(
+        key="clock",
+        name="Engine runtime",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.MINUTES,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
 )

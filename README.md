@@ -1,18 +1,51 @@
 # CarTrack for Home Assistant
 
-This repository provides a Home Assistant custom integration for CarTrack Fleet API. Home Assistant integrations create entities; add-ons run separate services and cannot create entities on their own.
+Connect a CarTrack Fleet account to Home Assistant and monitor its vehicles. This is a cloud-polling integration: vehicle data is retrieved from the CarTrack Fleet API, not directly from the vehicle.
 
-## Install
+Requires Home Assistant 2024.4.0 or newer.
 
-Copy `custom_components/cartrack` into the Home Assistant configuration directory under `custom_components/cartrack`, then restart Home Assistant. Alternatively, add this repository to HACS as a custom integration.
+## Install with HACS
 
-In Home Assistant, go to **Settings → Devices & services → Add integration → CarTrack**. Enter the account username and API key, then select the CarTrack region. The integration selects the corresponding Fleet API base URL from the [documented region list](https://developer.cartrack.com/docs/fleet-api-general/base-url). The API key is used as the HTTP Basic Auth password.
+In HACS, open **Integrations**, choose **Custom repositories** from the menu, and add this repository's URL with the **Integration** category. Find **CarTrack** in HACS and download it, then restart Home Assistant.
 
-Add the integration again for each additional account. Each entry polls independently and creates a device for each vehicle, with ignition and idling binary sensors, speed and odometer sensors, a location tracker, a status sensor, and a CarWatch switch. The status sensor also includes fuel, driver, and electric vehicle details as available from CarTrack. CarWatch switches require the API key to have permission to change CarWatch settings.
+Alternatively, manually copy `custom_components/cartrack` into the Home Assistant configuration directory under `custom_components/cartrack`, then restart Home Assistant.
 
-Configure the non-parked polling interval in the integration options (2–60 seconds; default 5 seconds). When all vehicles report parked, the integration polls every 60 seconds.
+## Set Up
 
-## Development Home Assistant
+In Home Assistant, go to **Settings → Devices & services → Add integration → CarTrack**. Enter your CarTrack username and API key, then select the region for your account. The selected region determines the Fleet API URL; see CarTrack's [Fleet API base URL documentation](https://developer.cartrack.com/docs/fleet-api-general/base-url). The integration checks the credentials by requesting vehicle data during setup.
+
+Add the integration separately for each CarTrack account. Each account is polled independently. The same account and region cannot be added twice.
+
+## What It Adds
+
+The integration creates a Home Assistant device for each vehicle reported by CarTrack. It also adds devices and entities when new vehicles appear in the account.
+
+| Entity | Behavior |
+| --- | --- |
+| **Status** | Reports **Parked**, **Idling**, **Driving**, or **Ignition on**, based on the ignition, idling, and speed data CarTrack returns. |
+| **Ignition** and **Idling** | Binary sensors for the corresponding vehicle states. |
+| **Speed** | Vehicle speed in km/h. |
+| **Odometer** | Odometer reading in km. |
+| **Battery voltage** | External vehicle battery voltage in volts, when reported by CarTrack. |
+| **TCU battery level** | Telematics unit battery level as a percentage. |
+| **Engine RPM** | Engine revolutions per minute. |
+| **Engine runtime** | Accumulated engine-on time in minutes. |
+| **Location** | Device tracker using the vehicle coordinates returned by CarTrack; includes an `altitude` attribute in meters when available. |
+| **CarWatch** | Switch to activate or deactivate CarWatch for the vehicle. |
+
+The **Status** sensor also exposes other available vehicle data as attributes, such as registration, event time, bearing, fuel, electric-vehicle details, and driver name. These fields depend on what CarTrack reports for the vehicle; missing data is not fabricated. CarWatch state is also included as a status attribute when available.
+
+The CarWatch switch is created for each vehicle, but CarTrack must report its current state for the switch to show on or off. Changing the switch requires API credentials with permission to manage CarWatch. The API key is used as the password for HTTP Basic Authentication.
+
+## Polling
+
+By default, the integration checks every 5 seconds while any vehicle is not confirmed parked. In the integration's **Options**, you can set this active polling interval from 2 to 60 seconds. When every vehicle reports ignition off, polling slows to once every 60 seconds. If ignition data is unavailable for a vehicle, the active interval is used.
+
+## Development
+
+The following instructions are for developing this integration, not required for a HACS installation.
+
+### Development Home Assistant
 
 Install Docker Desktop, then start the development instance from the repository root:
 
@@ -22,13 +55,13 @@ docker compose up -d
 
 Open `http://localhost:8123` and complete the initial Home Assistant setup. The integration directory is bind-mounted from this repository, so source changes are picked up after reloading the integration or restarting the container. Stop the instance with `docker compose down`; its configuration is kept in `dev/config`.
 
-## VS Code Dev Container
+### VS Code Dev Container
 
 Install the VS Code **Dev Containers** extension, then run **Dev Containers: Reopen in Container**. The container installs Home Assistant, pytest, and Ruff; Home Assistant starts with the CarTrack integration mounted from the workspace. Open `http://localhost:8123` and complete setup. Use **Run and Debug → Attach to Home Assistant** to attach breakpoints to the integration. In the integrated terminal, run `python -m pytest` and `python -m ruff check custom_components tests`.
 
 The devcontainer and the standalone Home Assistant service use the same port and configuration, so run one at a time. To use the standalone service instead, run `docker compose --profile standalone up -d homeassistant`.
 
-## Tests
+### Tests
 
 Use Python 3.12 or newer in a virtual environment:
 

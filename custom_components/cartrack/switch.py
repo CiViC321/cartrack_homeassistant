@@ -2,18 +2,26 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import CarTrackCoordinator
 
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities
+    _hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up one CarWatch switch for each vehicle, including new vehicles."""
     coordinator: CarTrackCoordinator = entry.runtime_data
@@ -42,6 +50,7 @@ class CarTrackCarWatchSwitch(CoordinatorEntity[CarTrackCoordinator], SwitchEntit
     def __init__(
         self, coordinator: CarTrackCoordinator, entry: ConfigEntry, vehicle_id: str
     ) -> None:
+        """Initialize the CarWatch switch for one vehicle."""
         super().__init__(coordinator)
         vehicle = coordinator.data["vehicles"][vehicle_id]
         registration = vehicle.get("registration") or vehicle_id
@@ -60,16 +69,16 @@ class CarTrackCarWatchSwitch(CoordinatorEntity[CarTrackCoordinator], SwitchEntit
         watch = self.coordinator.data["carwatch"].get(self._vehicle_id)
         return watch.get("is_active") if watch is not None else None
 
-    async def async_turn_on(self, **kwargs) -> None:
+    async def async_turn_on(self, **_kwargs: Any) -> None:
         """Activate CarWatch for this vehicle."""
-        await self._set_carwatch(True)
+        await self._set_carwatch(activate=True)
 
-    async def async_turn_off(self, **kwargs) -> None:
+    async def async_turn_off(self, **_kwargs: Any) -> None:
         """Deactivate CarWatch for this vehicle."""
-        await self._set_carwatch(False)
+        await self._set_carwatch(activate=False)
 
-    async def _set_carwatch(self, activate: bool) -> None:
+    async def _set_carwatch(self, *, activate: bool) -> None:
         await self.coordinator.api.async_set_carwatch(
-            int(self._vehicle_id), activate
+            int(self._vehicle_id), activate=activate
         )
         await self.coordinator.async_request_refresh()

@@ -2,24 +2,32 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfLength, UnitOfSpeed
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import CarTrackCoordinator
 
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities
+    _hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up one status sensor for each vehicle, including newly discovered ones."""
     coordinator: CarTrackCoordinator = entry.runtime_data
@@ -53,6 +61,7 @@ class CarTrackVehicleSensor(CoordinatorEntity[CarTrackCoordinator], SensorEntity
     def __init__(
         self, coordinator: CarTrackCoordinator, entry: ConfigEntry, vehicle_id: str
     ) -> None:
+        """Initialize the summary sensor for one vehicle."""
         super().__init__(coordinator)
         vehicle = coordinator.data["vehicles"][vehicle_id]
         registration = vehicle.get("registration") or vehicle_id

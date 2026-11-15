@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -16,6 +16,9 @@ from .const import (
     UPDATE_INTERVAL_SECONDS,
 )
 
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -23,7 +26,7 @@ def _records(payload: dict) -> list[dict]:
     """Extract a list of records from a documented API response envelope."""
     data = payload.get("data", [])
     if not isinstance(data, list):
-        raise CarTrackConnectionError("Unexpected API data format")
+        raise CarTrackConnectionError
     return [record for record in data if isinstance(record, dict)]
 
 
@@ -83,8 +86,9 @@ class CarTrackCoordinator(DataUpdateCoordinator[dict]):
                 )
                 else self._moving_update_interval
             )
-            return {"vehicles": vehicles, "carwatch": carwatch}
         except CarTrackAuthError as err:
             raise ConfigEntryAuthFailed from err
         except CarTrackConnectionError as err:
-            raise UpdateFailed("Unable to retrieve CarTrack data") from err
+            raise UpdateFailed from err
+        else:
+            return {"vehicles": vehicles, "carwatch": carwatch}

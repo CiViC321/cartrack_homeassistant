@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.components.device_tracker import SourceType, TrackerEntity
+from homeassistant.components.device_tracker.const import SourceType
+from homeassistant.components.device_tracker.entity import TrackerEntity
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -44,6 +45,7 @@ async def async_setup_entry(
 class CarTrackVehicleTracker(CoordinatorEntity[CarTrackCoordinator], TrackerEntity):
     """Expose the latest CarTrack coordinates as a Home Assistant tracker."""
 
+    _attr_device_info: DeviceInfo
     _attr_has_entity_name = True
     _attr_source_type = SourceType.GPS
     _attr_name = "Location"

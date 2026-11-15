@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from homeassistant.config_entries import ConfigEntry
+from typing import TYPE_CHECKING
+
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import CarTrackApi
@@ -17,6 +17,10 @@ from .const import (
     DEFAULT_MOVING_UPDATE_INTERVAL_SECONDS,
 )
 from .coordinator import CarTrackCoordinator
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,

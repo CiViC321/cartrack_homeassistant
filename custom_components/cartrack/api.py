@@ -29,6 +29,7 @@ class CarTrackApi:
         username: str,
         api_key: str,
     ) -> None:
+        """Initialize an API client for one account."""
         self._session = session
         self._base_url = base_url.rstrip("/")
         credentials = base64.b64encode(f"{username}:{api_key}".encode()).decode()
@@ -49,7 +50,7 @@ class CarTrackApi:
             "GET", "carwatch/status", params={"page": page, "limit": 1000}
         )
 
-    async def async_set_carwatch(self, vehicle_id: int, activate: bool) -> dict:
+    async def async_set_carwatch(self, vehicle_id: int, *, activate: bool) -> dict:
         """Change CarWatch state for a vehicle."""
         return await self._request(
             "POST",
@@ -80,7 +81,7 @@ class CarTrackApi:
                 response.raise_for_status()
                 payload = await response.json(content_type=None)
                 if not isinstance(payload, dict):
-                    raise CarTrackConnectionError("Unexpected API response")
+                    raise CarTrackConnectionError
                 return payload
         except CarTrackApiError:
             raise

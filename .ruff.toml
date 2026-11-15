@@ -21,5 +21,8 @@ fixture-parentheses = false
 [lint.pyupgrade]
 keep-runtime-typing = true
 
+[lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
 [lint.mccabe]
 max-complexity = 25

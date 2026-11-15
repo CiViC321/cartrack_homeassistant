@@ -45,7 +45,9 @@ class CarTrackConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Return the account options flow."""
         return CarTrackOptionsFlow()
 
-    async def async_step_user(self, user_input: dict | None = None):
+    async def async_step_user(
+        self, user_input: dict | None = None
+    ) -> config_entries.ConfigFlowResult:
         """Collect credentials and verify them against CarTrack."""
         errors: dict[str, str] = {}
         if user_input is not None:
